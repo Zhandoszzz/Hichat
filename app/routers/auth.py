@@ -17,5 +17,5 @@ async def login(user_info: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
     if not utils.verify(user_info.password, user.password):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials")
-    access_token = oauth2.create_token(data={'username': user.username, 'id': user.id})
+    access_token = oauth2.create_token(data={'username': user.username})
     return {"access_token": access_token, "token_type": "bearer"}

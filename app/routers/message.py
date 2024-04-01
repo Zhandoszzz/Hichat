@@ -12,7 +12,6 @@ router = APIRouter(
 def create_message(message: schemas.MessageCreate, db: Session = Depends(get_db)):
     owner = db.query(models.User).filter(models.User.username == message.owner_username).first()
     receiver = db.query(models.User).filter(models.User.username == message.receiver_username).first()
-
     if not owner or not receiver:
         raise HTTPException(status_code=404, detail="One or both users not found")
 
@@ -45,19 +44,13 @@ def get_messages_between_users(owner_username: str, receiver_username: str, sear
 @router.post("/chat/{username}", status_code=status.HTTP_201_CREATED, response_model=schemas.MessageDisplay)
 async def send_message(username: str, content: str, current_user: str = Depends(oauth2.get_current_user),
                        db: Session = Depends(get_db)):
-    # msg_dict = {
-    #     "owner_username": current_user.username,
-    #     "receiver_username": username,
-    #     "content": content
-    # }
     message = schemas.MessageCreate(
         owner_username=current_user.username,
         receiver_username=username,
         content=content
     )
     new_message = create_message(message, db)
-    new_message.owner = username
-    new_message.receiver = current_user.username
+
     return new_message
 
 
