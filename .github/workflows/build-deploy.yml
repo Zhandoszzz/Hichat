@@ -11,7 +11,7 @@ jobs:
 
       - name: Start services with Docker Compose
         run: |
-          docker-compose -f docker-compose-dev.yml up -d
+          docker compose -f docker-compose-dev.yml up -d
           echo "Waiting for app to start..."
           sleep 20  # Give the app and database some time to be ready
 
