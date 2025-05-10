@@ -22,6 +22,6 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0
         with:
-          target: 'http://localhost:8000'  # Your FastAPI app
-          docker_name: 'owasp/zap2docker-stable'
+          target: 'http://localhost:8000'
+          docker_name: 'owasp/zap2docker-stable:latest'
           cmd_options: '-a'  # Automatically accept all alerts
