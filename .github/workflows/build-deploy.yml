@@ -2,6 +2,10 @@ name: Build and Deploy
 
 on: [push, pull_request]
 
+permissions:
+  issues: write  # Grant write permissions for issues
+  contents: read # Allow reading repository contents for scans
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
