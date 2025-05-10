@@ -4,7 +4,40 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull git repo
-        uses: actions/checkout@v4
-      - name: say hi
-        run: echo "Hi"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Say hi
+      run: echo "Hi"
+
+    - name: Set up Docker Compose
+      run: docker-compose -f docker-compose.dev.yml up -d --build
+
+    - name: Wait for API to become healthy
+      run: |
+        for i in {1..30}; do
+          if curl -s http://localhost:8000/docs > /dev/null; then
+            echo "API is up!"
+            break
+          fi
+          echo "Waiting for API..."
+          sleep 5
+        done
+
+    - name: Run OWASP ZAP Baseline Scan
+      run: |
+        docker pull owasp/zap2docker-stable
+        docker run --network="host" -v ${{ github.workspace }}:/zap/wrk owasp/zap2docker-stable zap-baseline.py \
+          -t http://localhost:8000 -r zap-report.html -g zap-policy.conf -J zap-report.json
+
+    - name: Upload ZAP HTML Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: zap-html-report
+        path: zap-report.html
+
+    - name: Upload ZAP JSON Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: zap-json-report
+        path: zap-report.json
